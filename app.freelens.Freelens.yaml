@@ -46,7 +46,7 @@ modules:
       - mv opt/Freelens "${FLATPAK_DEST}/Freelens"
       - install -Dm0755 freelens-launch.sh "${FLATPAK_DEST}/bin/freelens"
       - |
-        for cmd in assume aws doctl gke-gcloud-auth-plugin glab kubelogin swc; do
+        for cmd in assume aws doctl gke-gcloud-auth-plugin glab swc; do
           install -Dm0755 host-spawn.sh "${FLATPAK_DEST}/bin/$cmd"
         done
       - install -Dm0644 usr/share/applications/freelens.desktop "${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop"
@@ -126,3 +126,30 @@ modules:
           url: https://api.github.com/repos/1player/host-spawn/releases/latest
           version-query: .tag_name | sub("^v"; "")
           url-query: .assets[] | select(.name=="host-spawn-aarch64") | .browser_download_url
+
+  - name: kubelogin
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 kubelogin "${FLATPAK_DEST}/bin/kubelogin"
+      - ln -sf kubelogin "${FLATPAK_DEST}/bin/kubectl-oidc_login"
+    sources:
+      - type: archive
+        url: https://github.com/int128/kubelogin/releases/download/v1.36.1/kubelogin_linux_amd64.zip
+        sha256: a6dae91dfedd564906d892b1bdb1b74d821808802263b95751ca8e95cb1c0936
+        only-arches:
+          - x86_64
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/int128/kubelogin/releases/latest
+          version-query: .tag_name | sub("^v"; "")
+          url-query: .assets[] | select(.name=="kubelogin_linux_amd64.zip") | .browser_download_url
+      - type: archive
+        url: https://github.com/int128/kubelogin/releases/download/v1.36.1/kubelogin_linux_arm64.zip
+        sha256: b6790c4991d9ec13fca3c9375635608874434da4a5476b8567e65302c852690e
+        only-arches:
+          - aarch64
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/int128/kubelogin/releases/latest
+          version-query: .tag_name | sub("^v"; "")
+          url-query: .assets[] | select(.name=="kubelogin_linux_arm64.zip") | .browser_download_url
